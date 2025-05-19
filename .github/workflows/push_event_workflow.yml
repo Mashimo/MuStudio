@@ -1,6 +1,7 @@
 name: Push Event Workflow
 
-on: push 
+on: 
+  push:
     paths:
       - 'MuNLP/**'
       - '.github/workflows/**'
