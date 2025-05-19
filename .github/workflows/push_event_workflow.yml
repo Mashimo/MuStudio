@@ -17,5 +17,4 @@ jobs:
       run : pip install pytest
       
     - name : Run tests 
-      working-directory: MuNLP
-      run : pytest test_muNLP.py
+      run : pytest
