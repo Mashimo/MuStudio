@@ -18,9 +18,15 @@
 Basic NLP module for text analysis and generation
 """
 
+from pypdf import PdfReader
+
+
+
 
 class MuNLP:
     'Text object, with analysis methods' 
+    
+     # standard initialisation, from a string
     def __init__(self, inputText, language = "EN"):
         self.text = inputText
         self.cleanText = ""
@@ -29,6 +35,27 @@ class MuNLP:
         self.language = language
         
         self.removePunctuation()
+        
+        
+    @classmethod
+    def fromPDF(cls, inputFile, language = "EN"):
+        """alternative initialisation, from a PDF file"""
+
+        reader = PdfReader(inputFile)
+        
+        nPages = len(reader.pages)
+
+        content = ""
+
+        for p in range(nPages):
+            page = reader.pages[p]
+            text = page.extract_text()
+    
+            content += text
+
+        print("Total read pages: ", nPages)
+
+        return cls(content, language)
 
     def getLength(self, verbose = 0):
         """
