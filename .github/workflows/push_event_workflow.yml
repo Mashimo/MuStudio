@@ -5,6 +5,7 @@ on:
     paths:
       - 'MuNLP/**'
       - '.github/workflows/**'
+      - 'requirements.txt'
 jobs:
   unit-testing:
     runs-on: ubuntu-latest 
