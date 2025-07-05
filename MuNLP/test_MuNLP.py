@@ -1,7 +1,8 @@
 from MuNLP import MuNLP
 
-     # 1 page, 6 paragraphes, 74 words, 401 chars, 474 chars with spaces
-    # 69+88+77+84+82+74 = 474
+# run pytest
+
+     # 1 paragraph, 6 sentences, 74 words (54 unique), 401 chars, 479 chars with spaces, punctuation and newlines
 sample = """Processing raw text intelligently is difficult: most words are rare, 
 and it’s common for words that look completely different to mean almost the same thing. 
 The same words in a different order can mean something completely different. 
@@ -9,7 +10,7 @@ Even splitting text into useful word-like units can be difficult in many languag
 While it’s possible to solve some problems starting from only the raw characters, 
 it’s usually better to use linguistic knowledge to add useful information."""
 
-line =  "Hello, world!"
+line =  "Hello, world!"  # 13 chars
 
 
 def test_getLength():
@@ -22,5 +23,4 @@ def test_getNumWords():
 
 def test_getStats():
     nlp = MuNLP(sample)
-    assert(nlp.getStats() == (74, 474))
-
+    assert(nlp.getStats() == (74, 54, 479))

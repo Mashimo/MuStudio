@@ -19,7 +19,7 @@ Basic NLP module for text analysis and generation
 """
 
 from pypdf import PdfReader
-
+from collections import Counter
 
 
 
@@ -28,14 +28,14 @@ class MuNLP:
     
      # standard initialisation, from a string
     def __init__(self, inputText, language = "EN"):
-        self.text = inputText
-        self.cleanText = ""
+        self.text = inputText  # raw input text
+        self.cleanText = ""    # without punctuation
         self.tokens = []
         self.sentences = []
         self.language = language
         
-        self.removePunctuation()
-        
+        self._cleanTheText()  # remove puntuaction from text and store cleaned text in cleanText
+        self.tokens = self.cleanText.split() 
         
     @classmethod
     def fromPDF(cls, inputFile, language = "EN"):
@@ -57,72 +57,116 @@ class MuNLP:
 
         return cls(content, language)
 
+    @classmethod
+    def fromText(cls, inputFile, language = "EN"):
+        """alternative initialisation, from a text file"""
+
+        f = open(inputFile)
+        try:
+            content = f.read()  # this is a giant String
+        finally:
+            f.close()  # we should always close the file once finished      
+
+        return cls(content, language)
+    
+    #
+    # Internal functions
+    #
+    def _cleanTheText(self):
+        """ remove punctuation from text"""
+        import re
+
+        self.cleanText = re.sub(r"([^\s\w'’])+", '', self.text.strip()) # remove punctuation & trailing spaces
+
+        self.cleanText = self.cleanText.replace('\n', ' ')  # replace newlines with space
+
+        self.cleanText = self.cleanText.lower() # replace capital letters
+        
+        
+    #
+    # Set information methods
+    #
+    def updateText(self, newText):
+        """ replace the existing text with new one + clean the new text
+        Arguments:
+            newText : string
+        """
+        self.text = newText
+        
+        self._cleanTheText()  # remove puntuaction from text and store cleaned text in cleanText
+        
+        self.tokens = self.cleanText.split()
+    #
+    # Retrieve information methods
+    #
     def getLength(self, verbose = 0):
         """
-        Basic text statistics
+        total number of characters in the raw text
         Arguments:
-            text: string
             verbose: level of verbosity: 0 = no prints, 1 = summary, 2 = per page (default=0)
 
         Returns:
             int = total characters
         """
 
-        text = self.text.replace('\n', '')
-
-        totalChars = len(text)
+        totalChars = len(self.text)
 
         if (verbose != 0):
             print("Total chars: ", totalChars)
         
         return totalChars
     
+    
     def getNumWords(self, verbose = 0):
         """
-        Basic text statistics
+        total number of words in the text
         Arguments:
-            text: string
             verbose: level of verbosity: 0 = no prints, 1 = summary, 2 = per page (default=0)
 
         Returns:
             int = total words
         """
-
-        text = self.text.replace('\n', '')
-
-        totalWords = len(text.split())
+        
+        totalWords = len(self.tokens)
 
         if (verbose != 0):
             print("Total words: ", totalWords)
         
         return totalWords
 
+    
     def getStats(self, verbose = 0):
         """
-        Basic text statistics
+        Basic text statistics: total words and characters
         Arguments:
-            text: string
             verbose: level of verbosity: 0 = no prints, 1 = summary, 2 = per page (default=0)
 
         Returns:
             tuple = (total words, total characters)
         """
 
-        text = self.text.replace('\n', '')
+        totalChars = len(self.text)
+        totalWords = len(self.tokens)
 
-        totalChars = len(text)
-        totalWords = len(text.split())
+        wordsCount = len(Counter(self.tokens)) # count the occurrences
 
         if (verbose != 0):
             print("Total words: ", totalWords)
+            print("Unique words: ", wordsCount)
             print("Total chars: ", totalChars)
         
-        return totalWords, totalChars
+        return totalWords, wordsCount, totalChars
     
-    def removePunctuation(self):
-        """ remove punctuation from text"""
-        import re
-
-        self.cleanText = re.sub(r'([^\s\w_]|_)+', '', self.text.strip()) # remove punctuation
-
-
+    
+    def getMostCommonWords(self, n=10):
+        """
+        the most used words and their occurence
+        Arguments: 
+            n: top words to return
+        Returns:
+            n top words and their occurence
+        """
+        wordsCount = Counter(self.tokens) # count the occurrences
+    
+        return wordsCount.most_common()[:n]
+    
