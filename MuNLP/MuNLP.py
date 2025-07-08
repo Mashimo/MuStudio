@@ -20,6 +20,7 @@ Basic NLP module for text analysis and generation
 
 from pypdf import PdfReader
 from collections import Counter
+import re
 
 
 
@@ -30,12 +31,14 @@ class MuNLP:
     def __init__(self, inputText, language = "EN"):
         self.text = inputText  # raw input text
         self.cleanText = ""    # without punctuation
+        self.words = []
         self.tokens = []
         self.sentences = []
         self.language = language
         
-        self._cleanTheText()  # remove puntuaction from text and store cleaned text in cleanText
-        self.tokens = self.cleanText.split() 
+        self._preprocessText()  # remove puntuaction from text and store cleaned text in cleanText
+        
+
         
     @classmethod
     def fromPDF(cls, inputFile, language = "EN"):
@@ -83,6 +86,25 @@ class MuNLP:
         self.cleanText = self.cleanText.lower() # replace capital letters
         
         
+    def _removeStopwords(self):
+        
+        f = open("stopwords.txt")
+        stopWordsText = f.read().splitlines()  # splitlines is used to remove newlines
+        f.close()
+        stopWords = set(stopWordsText)
+        self.tokens = [token for token in self.words if token not in stopWords]
+        
+        
+    def _preprocessText(self):
+        self._cleanTheText()  # remove puntuaction from text and store cleaned text in cleanText
+        self.words = self.cleanText.split() 
+        
+        self.sentences = re.split(r'(?<=[.!?])\s+', self.text)  # a very simple split into sentences
+        
+        self._removeStopwords()
+        
+        
+        
     #
     # Set information methods
     #
@@ -93,9 +115,8 @@ class MuNLP:
         """
         self.text = newText
         
-        self._cleanTheText()  # remove puntuaction from text and store cleaned text in cleanText
-        
-        self.tokens = self.cleanText.split()
+        self._preprocessText()  # remove puntuaction from text and store cleaned text in cleanText
+
     #
     # Retrieve information methods
     #
@@ -127,13 +148,21 @@ class MuNLP:
             int = total words
         """
         
-        totalWords = len(self.tokens)
+        totalWords = len(self.words)
 
         if (verbose != 0):
             print("Total words: ", totalWords)
         
         return totalWords
 
+    def getNumSentences(self, verbose = 0):
+        
+        totalSentences = len(self.sentences)
+        
+        if (verbose != 0):
+            print("Approximate total number of sentences: ", totalSentences)
+         
+        return totalSentences
     
     def getStats(self, verbose = 0):
         """
@@ -146,16 +175,18 @@ class MuNLP:
         """
 
         totalChars = len(self.text)
-        totalWords = len(self.tokens)
+        totalWords = len(self.words)
+        totalSentences = len(self.sentences)
 
-        wordsCount = len(Counter(self.tokens)) # count the occurrences
+        wordsCount = len(Counter(self.words)) # count the occurrences
 
         if (verbose != 0):
             print("Total words: ", totalWords)
             print("Unique words: ", wordsCount)
+            print("Approximate total number of sentences: ", totalSentences)
             print("Total chars: ", totalChars)
         
-        return totalWords, wordsCount, totalChars
+        return totalWords, wordsCount, totalSentences, totalChars
     
     
     def getMostCommonWords(self, n=10):

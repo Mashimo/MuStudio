@@ -2,7 +2,7 @@ from MuNLP import MuNLP
 
 # run pytest
 
-     # 1 paragraph, 6 sentences, 74 words (54 unique), 401 chars, 479 chars with spaces, punctuation and newlines
+     # 1 paragraph, 6 lines, 4 sentences, 74 words (54 unique), 401 chars, 479 chars with spaces, punctuation and newlines
 sample = """Processing raw text intelligently is difficult: most words are rare, 
 and it’s common for words that look completely different to mean almost the same thing. 
 The same words in a different order can mean something completely different. 
@@ -20,7 +20,11 @@ def test_getLength():
 def test_getNumWords():
     nlp = MuNLP(line)
     assert nlp.getNumWords() == 2
+    
+def test_getNumSentences():
+    nlp = MuNLP(line)
+    assert nlp.getNumSentences() == 1
 
 def test_getStats():
     nlp = MuNLP(sample)
-    assert(nlp.getStats() == (74, 54, 479))
+    assert(nlp.getStats() == (74, 54, 4, 479))
