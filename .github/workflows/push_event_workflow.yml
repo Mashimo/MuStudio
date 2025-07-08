@@ -16,9 +16,13 @@ jobs:
       
     - name : Install Packages 
       run : pip install -r requirements.txt
-      
-    - name : Run tests 
+
+    - name : print directory
        # Change directory to where script and txt files are
-      run : |
-	cd ../../MuNLP
-        pytest
+      run : echo "Current directory: $(pwd)"
+      
+    - name : change directory
+      run : cd ../../MuNLP
+
+    - name : Run tests 
+      run : pytest
