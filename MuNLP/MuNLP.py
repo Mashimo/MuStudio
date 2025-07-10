@@ -191,13 +191,22 @@ class MuNLP:
     
     def getMostCommonWords(self, n=10):
         """
-        the most used words and their occurence
+        the most used words and their occurence if > 1
         Arguments: 
-            n: top words to return
+            n: max top words to return
         Returns:
-            n top words and their occurence
+            <= n top words and their occurence if > 1
         """
         wordsCount = Counter(self.tokens) # count the occurrences
     
-        return wordsCount.most_common()[:n]
+            # return list of n word and count if count > 1
     
+        return [(word, count) for word, count in wordsCount.most_common() if count > 1][:n]
+
+    def getTopBigrams(self, n=10):
+        bigrams = [(self.tokens[i], self.tokens[i+1]) for i in range(len(self.tokens)-1)]
+        bigramsCount = Counter(bigrams) # count the occurrences
+
+        return [(word, count) for word, count in bigramsCount.most_common() if count > 1][:n]
+
+

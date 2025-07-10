@@ -28,3 +28,14 @@ def test_getNumSentences():
 def test_getStats():
     nlp = MuNLP(sample)
     assert(nlp.getStats() == (74, 54, 4, 479))
+
+def test_numTopWords():
+    nlp = MuNLP(sample)
+    assert(len(nlp.getMostCommonWords()) == 9)
+    
+def test_getTopBigrams():
+    nlp = MuNLP(sample)
+    bigrams = nlp.getTopBigrams()
+    assert(len(bigrams) == 1)
+    assert(bigrams[0][1] == 2)
+    
